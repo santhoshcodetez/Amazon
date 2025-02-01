@@ -15,12 +15,11 @@ const getOrder=async(req,res)=>{
 
 const createOrder=async(req,res)=>{
     try {
-        const productcreate=await Order.bulkCreate({
-
-        })
+        const productcreate=await Order.create(req.body)
         res.status(200).json({message:"created the producted sucessfully",data:productcreate})
     } catch (error) {
-        res.status(400).json({message:"error to create a product",error:error.message})
+        console.log(error)
+        res.status(400).json({message:"error to create a Order",error:error.message})
     }
 }
 
