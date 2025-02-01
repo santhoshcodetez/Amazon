@@ -13,18 +13,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  OrderDetail.init({
-    id: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-    },
+  OrderDetail.init({    id: {
+    primaryKey: true,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+  },
     Quantity: DataTypes.INTEGER,
     Price: DataTypes.INTEGER,
     discount: DataTypes.INTEGER,
     totalAmount: DataTypes.INTEGER,
     status: DataTypes.STRING,
-    customerId: DataTypes.UUID,
+    orderId: DataTypes.UUID,
     productId: DataTypes.UUID
   }, {
     sequelize,

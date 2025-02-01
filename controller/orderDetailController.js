@@ -6,7 +6,7 @@ const {OrderDetail}=require("../models")
 const getOrder=async(req,res)=>{
     try {
         const productget=await OrderDetail.findAll()
-        res.status(200).json({message:"Products Listed Sucessfully",data:productget})
+        res.status(200).json({message:"Order Details Listed Sucessfully",data:productget})
     } catch (error) {
         console.log(error);
         res.status(400).json({message:"Error to list out the prodruct",error:error.message})

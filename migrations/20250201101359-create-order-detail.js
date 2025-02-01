@@ -23,7 +23,7 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
-      customerId: {
+      orderId: {
         type: Sequelize.UUID
       },
       productId: {
