@@ -5,6 +5,7 @@ const { Customer, Order, OrderDetail, Product } = require("../models");
 
 const getAllDetails = async (req, res) => {
     try {
+        const TotalCustomer=await Customer.count()
         const details = await Customer.findAll({
             include: [
                 {
@@ -28,6 +29,7 @@ const getAllDetails = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully",
+            TotalCustomer:TotalCustomer,
             data: details
         });
 
