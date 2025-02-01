@@ -1,17 +1,48 @@
 const { where } = require("sequelize");
-const {OrderDetail}=require("../models")
+// const {OrderDetail}=require("../models")
 
 
 
-const getOrder=async(req,res)=>{
+const { Customer, Order, OrderDetail, Product } = require("../models");
+const getAllDetails = async (req, res) => {
     try {
-        const productget=await OrderDetail.findAll()
-        res.status(200).json({message:"Order Details Listed Sucessfully",data:productget})
+        const details = await Customer.findAll({
+            include: [
+                {
+                    model: Order,
+                    as: "OrderValue",
+                    include: [
+                        {
+                            model: OrderDetail,
+                            as: "OrderDetails",
+                            include: [
+                                {
+                                    model: Product,
+                                    as: "ProductValue"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
+
+        res.status(200).json({
+            message: "Data fetched successfully",
+            data: details
+        });
+
     } catch (error) {
         console.log(error);
-        res.status(400).json({message:"Error to list out the prodruct",error:error.message})
+        res.status(500).json({
+            message: "Error fetching data",
+            error: error.message
+        });
     }
-}
+};
+
+
+
 
 const createOrder=async(req,res)=>{
     try {
@@ -43,4 +74,4 @@ const deleteOrder=async(req,res)=>{
     }
 }
 
-module.exports={deleteOrder,createOrder,updateOrder,getOrder}
+module.exports={deleteOrder,createOrder,updateOrder,getAllDetails}

@@ -10,14 +10,23 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      OrderDetail.belongsTo(models.Product, {
+        foreignKey: "productId",
+        as: "ProductValue"
+      });
+
+      OrderDetail.belongsTo(models.Order, {
+        foreignKey: "orderId",
+        as: "OrderValue"
+      });
     }
   }
-  OrderDetail.init({    id: {
-    primaryKey: true,
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-  },
+  OrderDetail.init({
+    id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+    },
     Quantity: DataTypes.INTEGER,
     Price: DataTypes.INTEGER,
     discount: DataTypes.INTEGER,

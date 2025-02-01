@@ -1,12 +1,11 @@
 const { where } = require("sequelize");
 const {Product}=require("../models")
 
-//CRUD OPERATION
-
 const getProduct=async(req,res)=>{
     try {
         const productget=await Product.findAll()
-        res.status(200).json({message:"Products Listed Sucessfully",data:productget})
+        const productCount=await Product.count()
+        res.status(200).json({message:"Products Listed Sucessfully",totalproducts:productCount,data:productget})
     } catch (error) {
         console.log(error);
         res.status(400).json({message:"Error to list out the prodruct",error:error.message})

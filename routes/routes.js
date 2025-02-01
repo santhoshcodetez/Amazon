@@ -21,7 +21,7 @@ router.post('/postOrder',Ordercontroller.createOrder)
 router.put('/updateOrder',Ordercontroller.updateOrder)
 router.delete('/deleteOrder',Ordercontroller.deleteOrder)
 
-router.get('/getDetail',OrderDetailController.getOrder)
+router.get('/getDetail',OrderDetailController.getAllDetails)
 router.post('/postDetail',OrderDetailController.createOrder)
 router.put('/updateDetail',OrderDetailController.updateOrder)
 router.delete('/deleteDetail',OrderDetailController.deleteOrder)
