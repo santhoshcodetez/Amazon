@@ -25,5 +25,6 @@ router.get('/getDetail',OrderDetailController.getAllDetails)
 router.post('/postDetail',OrderDetailController.createOrder)
 router.put('/updateDetail',OrderDetailController.updateOrder)
 router.delete('/deleteDetail',OrderDetailController.deleteOrder)
+router.get('/getDetailId',OrderDetailController.getCustomerDetails)
 
 module.exports=router;
