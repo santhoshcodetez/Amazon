@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Product.init({    id: {
-    primaryKey: true,
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    autoIncrement:true
-  },
+  Product.init({
+    id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+    },
     ProductName: DataTypes.STRING,
     ProductCode: DataTypes.INTEGER,
     MrpPrice: DataTypes.INTEGER,
