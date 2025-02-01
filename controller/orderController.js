@@ -1,5 +1,6 @@
 const { where } = require("sequelize");
 const {Order}=require("../models")
+const {generateOrderNum}=require('../controller/autogenerateFunction')
 
 //CRUD OPERATION
 
@@ -14,9 +15,18 @@ const getOrder=async(req,res)=>{
 }
 
 const createOrder=async(req,res)=>{
+    const{deliveryDate,orderDate,orderStatus,customerId}=req.body
     try {
-        const productcreate=await Order.create(req.body)
-        res.status(200).json({message:"created the producted sucessfully",data:productcreate})
+        
+        const orderNum=generateOrderNum()
+        const productCreate=await Order.create({
+            orderNum,
+            deliveryDate,
+            orderDate,
+            orderStatus,
+            customerId,
+        })
+        res.status(200).json({message:"created the producted sucessfully",data:productCreate})
     } catch (error) {
         console.log(error)
         res.status(400).json({message:"error to create a Order",error:error.message})

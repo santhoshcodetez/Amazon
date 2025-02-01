@@ -20,20 +20,20 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
     },
     orderNum: DataTypes.STRING,
-    deliveryDate: DataTypes.INTEGER,
-    orderDate: DataTypes.INTEGER,
+    deliveryDate: DataTypes.DATE,
+    orderDate: DataTypes.DATE,
     orderStatus: DataTypes.STRING,
     customerId: DataTypes.UUID
   }, {
     sequelize,
     modelName: 'Order',
-    hooks: {
-      beforeCreate: async (order) => {
-        const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-        const randomPart = Math.floor(1000 + Math.random() * 9000);
-        order.orderNum = `ORD-${datePart}-${randomPart}`;
-      }
-    }
+    // hooks: {
+    //   beforeCreate: async (order) => {
+    //     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    //     const randomPart = Math.floor(1000 + Math.random() * 9000);
+    //     order.orderNum = `ORD-${datePart}-${randomPart}`;
+    //   }
+    // }
   });
 
   return Order;

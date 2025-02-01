@@ -14,11 +14,11 @@ module.exports = {
       },
       deliveryDate: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.DATE
       },
       orderDate: {
         allowNull: false,
-        type: Sequelize.INTEGER
+        type: Sequelize.DATE
       },
       orderStatus: {
         allowNull: false,
