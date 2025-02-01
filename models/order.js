@@ -13,12 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Order.init({    id: {
-    primaryKey: true,
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4
-  },
-    orderName: DataTypes.STRING,
+  Order.init({
+    orderNum: DataTypes.STRING,
     deliveryDate: DataTypes.INTEGER,
     orderDate: DataTypes.INTEGER,
     orderStatus: DataTypes.STRING,
