@@ -19,7 +19,7 @@ const createOrder=async(req,res)=>{
     try {
         
         const orderNum=generateOrderNum()
-        const productCreate=await Order.create({
+        const order=await Order.create({
             orderNum,
             deliveryDate,
             orderDate,
@@ -33,11 +33,11 @@ const createOrder=async(req,res)=>{
                 discount:orderdetailuser.discount,
                 totalAmount:orderdetailuser.totalAmount,
                 status:orderdetailuser.status,
-                orderId:productCreate.id,
+                orderId:order.id,
                 productId:orderdetailuser.productId
             })
         }
-        res.status(200).json({message:"created the producted sucessfully",data:productCreate})
+        res.status(200).json({message:"created the Order sucessfully",data:order})
     } catch (error) {
         console.log(error)
         res.status(400).json({message:"error to create a Order",error:error.message})

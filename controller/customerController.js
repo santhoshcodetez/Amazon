@@ -1,10 +1,8 @@
-const { Where } = require('sequelize/lib/utils')
-const { where } = require('sequelize')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const {Customer}=require('../models')
-// const {validateUser}=require('../controller/validateUser')
+const validateUser=require('../controller/validateUser')
 
 
 const getCustomer = async (req, res) => {
@@ -18,8 +16,8 @@ const getCustomer = async (req, res) => {
 
 const register = async (req, res) => {
 
-    // const { error } = validateUser.validate(req.body);
-    // if (error) return res.status(400).json({ message: error.details[0].message });
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
 
     const { Username, Password, email, contact  } = req.body
     try {
@@ -30,7 +28,6 @@ const register = async (req, res) => {
         const hashedpassword = await bcrypt.hash(Password, 10)
         
         const newCustomer = await Customer.create({ Username, Password: hashedpassword, email,contact  })
-        // const token = jwt.sign({ id: newCustomer.id, Username: newCustomer.Username }, process.env.JWT_SECRET, { expiresIn: "1h" })
         res.status(201).json({ message: "User Registed Sucessfully",newCustomer })
     } catch (error) {
         console.log(error);
