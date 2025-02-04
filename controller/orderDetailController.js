@@ -1,26 +1,57 @@
 const { where } = require("sequelize");
 const { Customer, Order, OrderDetail, Product } = require("../models");
+const paginate=require('../controller/paginationFunction')
 
 const getAllDetails = async (req, res) => {
     try {
-
-        const page = isNaN(parseInt(req.query.page)) || parseInt(req.query.page) < 1 ? 1 : parseInt(req.query.page);
-        const size = isNaN(parseInt(req.query.size)) || parseInt(req.query.size) < 1 ? 10 : parseInt(req.query.size);
-        const offset = (page - 1) * size;
-        
-        const totalCustomers = await Customer.count();
-
         const details = await Order.findAll({
-            limit: size, 
-            offset: offset, 
-            
             include: [
                 {
-                    model: Customer, 
+                    model: Customer,
                     as: "Customervalue"
                 },
                 {
-                    model: OrderDetail, 
+                    model: OrderDetail,
+                    as: "OrderDetails",
+                    include: [
+                        {
+                            model: Product,
+                            as: "ProductValue"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        res.status(200).json({
+            message: "Data fetched successfully", data: details
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error fetching data",
+            error: error.message
+        });
+    }
+};
+
+const getAllDetailsCount = async (req, res) => {
+    try {
+
+        const { page, size, offset } = paginate(req.query.page, req.query.size);
+
+        const details = await Order.findAndCountAll({
+            limit: size,
+            offset: offset,
+
+            include: [
+                {
+                    model: Customer,
+                    as: "Customervalue"
+                },
+                {
+                    model: OrderDetail,
                     as: "OrderDetails",
                     include: [
                         {
@@ -34,10 +65,10 @@ const getAllDetails = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully",
-            totalCustomers: totalCustomers,
+            totalCustomers: details.count,
             currentPage: page,
-            totalPages: Math.ceil(totalCustomers / size),
-            data: details 
+            totalPages: Math.ceil(details.count / size),
+            data: details
         });
 
     } catch (error) {
@@ -128,4 +159,4 @@ const deleteOrder = async (req, res) => {
     }
 }
 
-module.exports = { deleteOrder, createOrder, updateOrder, getAllDetails, getCustomerDetails }
+module.exports = { deleteOrder, createOrder, updateOrder, getAllDetails, getCustomerDetails, getAllDetailsCount }

@@ -7,4 +7,8 @@ const registerSchema = Joi.object({
     contact: Joi.number().min(10).required()
 });
 
-module.exports = { registerSchema };
+const validateUser = (data) => {
+    return registerSchema.validate(data);
+};
+
+module.exports = { validateUser };
