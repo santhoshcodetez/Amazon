@@ -1,26 +1,65 @@
 const { where } = require("sequelize");
 const { Customer, Order, OrderDetail, Product } = require("../models");
+const order = require("../models/order");
 
 
+
+// const getAllDetails = async (req, res) => {
+//     try {
+//         const TotalCustomer=await Customer.count()
+//         const details = await Customer.findAll({
+//             include: [
+//                 {
+//                     model: Order,
+//                     as: "OrderValue",
+//                     include: [
+//                         {
+//                             model: OrderDetail,
+//                             as: "OrderDetails",
+//                             include: [
+//                                 {
+//                                     model: Product,
+//                                     as: "ProductValue"
+//                                 }
+//                             ]
+//                         }
+//                     ]
+//                 }
+//             ]
+//         });
+
+//         res.status(200).json({
+//             message: "Data fetched successfully",
+//             TotalCustomer:TotalCustomer,
+//             data: details
+//         });
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({
+//             message: "Error fetching data",
+//             error: error.message
+//         });
+//     }
+// };
 
 const getAllDetails = async (req, res) => {
     try {
-        const TotalCustomer=await Customer.count()
-        const details = await Customer.findAll({
+        const TotalCustomer = await Customer.count();
+
+        const details = await Order.findAll({
             include: [
                 {
-                    model: Order,
-                    as: "OrderValue",
+                    model: Customer, 
+                    as: "Customervalue"
+                },
+                {
+                    model: OrderDetail, 
+                    as: "OrderDetails",
                     include: [
                         {
-                            model: OrderDetail,
-                            as: "OrderDetails",
-                            include: [
-                                {
-                                    model: Product,
-                                    as: "ProductValue"
-                                }
-                            ]
+                            model: Product,
+                            as: "ProductValue"
                         }
                     ]
                 }
@@ -29,7 +68,7 @@ const getAllDetails = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully",
-            TotalCustomer:TotalCustomer,
+            TotalCustomer: TotalCustomer,
             data: details
         });
 
