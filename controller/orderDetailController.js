@@ -1,53 +1,19 @@
 const { where } = require("sequelize");
 const { Customer, Order, OrderDetail, Product } = require("../models");
-const order = require("../models/order");
-
-
-
-// const getAllDetails = async (req, res) => {
-//     try {
-//         const TotalCustomer=await Customer.count()
-//         const details = await Customer.findAll({
-//             include: [
-//                 {
-//                     model: Order,
-//                     as: "OrderValue",
-//                     include: [
-//                         {
-//                             model: OrderDetail,
-//                             as: "OrderDetails",
-//                             include: [
-//                                 {
-//                                     model: Product,
-//                                     as: "ProductValue"
-//                                 }
-//                             ]
-//                         }
-//                     ]
-//                 }
-//             ]
-//         });
-
-//         res.status(200).json({
-//             message: "Data fetched successfully",
-//             TotalCustomer:TotalCustomer,
-//             data: details
-//         });
-
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({
-//             message: "Error fetching data",
-//             error: error.message
-//         });
-//     }
-// };
 
 const getAllDetails = async (req, res) => {
     try {
-        const TotalCustomer = await Customer.count();
+
+        const page = isNaN(parseInt(req.query.page)) || parseInt(req.query.page) < 1 ? 1 : parseInt(req.query.page);
+        const size = isNaN(parseInt(req.query.size)) || parseInt(req.query.size) < 1 ? 10 : parseInt(req.query.size);
+        const offset = (page - 1) * size;
+        
+        const totalCustomers = await Customer.count();
 
         const details = await Order.findAll({
+            limit: size, 
+            offset: offset, 
+            
             include: [
                 {
                     model: Customer, 
@@ -68,12 +34,14 @@ const getAllDetails = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully",
-            TotalCustomer: TotalCustomer,
-            data: details
+            totalCustomers: totalCustomers,
+            currentPage: page,
+            totalPages: Math.ceil(totalCustomers / size),
+            data: details 
         });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             message: "Error fetching data",
             error: error.message
@@ -81,12 +49,13 @@ const getAllDetails = async (req, res) => {
     }
 };
 
+
 const getCustomerDetails = async (req, res) => {
     try {
-        const { id } = req.body; 
+        const { id } = req.body;
 
         const customerDetails = await Customer.findOne({
-            where: { id }, 
+            where: { id },
             include: [
                 {
                     model: Order,
