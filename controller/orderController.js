@@ -1,6 +1,7 @@
 const { where } = require("sequelize");
 const {Order,OrderDetail}=require("../models")
 const {generateOrderNum}=require('../controller/autogenerateFunction')
+const { sequelize } = require('../models');
 
 //CRUD OPERATION
 
@@ -27,11 +28,12 @@ const createOrder=async(req,res)=>{
             customerId,
         })
         for(const orderdetailuser of req.body.OrderDetail){
+            const totalAmount = orderdetailuser.Price - orderdetailuser.discount;
             await OrderDetail.create({
                 Quantity:orderdetailuser.Quantity,
                 Price:orderdetailuser.Price,
                 discount:orderdetailuser.discount,
-                totalAmount:orderdetailuser.totalAmount,
+                totalAmount:totalAmount,
                 status:orderdetailuser.status,
                 orderId:order.id,
                 productId:orderdetailuser.productId
