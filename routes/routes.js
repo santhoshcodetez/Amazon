@@ -23,6 +23,7 @@ router.put('/updateOrder',Ordercontroller.updateOrder)
 router.delete('/deleteOrder',Ordercontroller.deleteOrder)
 
 router.get('/getDetail',OrderDetailController.getAllDetails)
+router.get('/getAllDetailsid', OrderDetailController.getAllDetailsid);
 router.get('/getDetail/all',OrderDetailController.getAllDetailsCount)
 router.post('/postDetail',OrderDetailController.createOrder)
 router.put('/updateDetail',OrderDetailController.updateOrder)

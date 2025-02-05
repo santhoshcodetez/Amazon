@@ -4,22 +4,25 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Payments', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+
         primaryKey: true,
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
+      },
+      orderId: {
+        type: Sequelize.UUID
+      },
+      orderAmount: {
+        type: Sequelize.INTEGER
+      },
+      voucher: {
+        type: Sequelize.INTEGER
+      },
+      totalAmount: {
         type: Sequelize.INTEGER
       },
       paymentType: {
         type: Sequelize.INTEGER
-      },
-      Voucher: {
-        type: Sequelize.INTEGER
-      },
-      finalPrice: {
-        type: Sequelize.INTEGER
-      },
-      orderId: {
-        type: Sequelize.UUID
       },
       createdAt: {
         allowNull: false,

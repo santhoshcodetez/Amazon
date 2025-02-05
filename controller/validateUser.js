@@ -10,3 +10,14 @@ const registerSchema = Joi.object({
 const validateUser = (data) => registerSchema.validate(data);
 
 module.exports = validateUser; 
+
+
+
+        // const paymentData = {
+        //     paymentType: req.body.paymentType, 
+        //     Voucher: req.body.Voucher,         
+        //     orderId: order.id,                 
+        //     totalAmount: totalOrderAmount     
+        // };
+        
+        // createPayment({ body: paymentData }, res); 

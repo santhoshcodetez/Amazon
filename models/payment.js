@@ -14,10 +14,17 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Payment.init({
-    paymentType: DataTypes.INTEGER,
-    Voucher: DataTypes.INTEGER,
-    finalPrice: DataTypes.INTEGER,
-    orderId: DataTypes.UUID
+    id: {
+
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4
+    },
+    orderId: DataTypes.UUID,
+    orderAmount: DataTypes.INTEGER,
+    voucher: DataTypes.INTEGER,
+    totalAmount: DataTypes.INTEGER,
+    paymentType: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Payment',
