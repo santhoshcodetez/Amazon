@@ -1,5 +1,5 @@
 const { where } = require("sequelize");
-const { Customer, Order, OrderDetail, Product } = require("../models");
+const { Customer, Order, OrderDetail, Product,Payment } = require("../models");
 const paginate = require('../controller/paginationFunction'); // Assuming pagination function is defined
 
 
@@ -40,20 +40,32 @@ const getAllDetails = async (req, res) => {
 
 
 const getAllDetailsid = async (req, res) => {
-    const { customerId } = req.body;  
+    const { customerId, paymentType } = req.body;  
 
-
-    if (!customerId) {
+    if (!customerId && !paymentType) {
         return res.status(400).json({
-            message: "customerId is required"
+            message: "Either customerId or paymentType is required"
         });
     }
 
     console.log("Received customerId:", customerId);
+    console.log("Received paymentType:", paymentType);
 
     try {
+        let whereCondition = {};
+
+        if (customerId) {
+            whereCondition.customerId = customerId;
+        }
+
+        let wherePaymentCondition = {};
+
+        if (paymentType) {
+            wherePaymentCondition.paymentType = paymentType;
+        }
+
         const details = await Order.findAll({
-            where: { customerId },  
+            where: whereCondition,  
             include: [
                 {
                     model: Customer,
@@ -68,18 +80,24 @@ const getAllDetailsid = async (req, res) => {
                             as: "ProductValue"
                         }
                     ]
+                },
+                {
+                    model: Payment,
+                    as: "PaymentValue",
+                    where: wherePaymentCondition
                 }
             ]
         });
 
         if (details.length === 0) {
             return res.status(404).json({
-                message: "No orders found for this customer"
+                message: "No orders found for the given criteria"
             });
         }
 
         res.status(200).json({
-            message: "Data fetched successfully", data: details
+            message: "Data fetched successfully", 
+            data: details
         });
 
     } catch (error) {
@@ -90,6 +108,7 @@ const getAllDetailsid = async (req, res) => {
         });
     }
 };
+
 
 
 const getAllDetailsCount = async (req, res) => {
