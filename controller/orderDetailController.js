@@ -1,6 +1,8 @@
 const { where } = require("sequelize");
 const { Customer, Order, OrderDetail, Product,Payment } = require("../models");
 const paginate = require('../controller/paginationFunction'); 
+const { Op } = require("sequelize");
+
 
 
 const getAllDetails = async (req, res) => {
@@ -40,9 +42,9 @@ const getAllDetails = async (req, res) => {
 
 
 const getAllDetailsid = async (req, res) => {
-    const { customerId, paymentType, orderStatus } = req.body; 
+    const { customerId, paymentType, orderStatus ,fromDate,toDate,orderFromDate,orderToDate } = req.body; 
 
-    if (!customerId && !paymentType && !orderStatus) {
+    if (!customerId && !paymentType && !orderStatus && !fromDate && !toDate && !orderFromDate && !orderToDate ) {
         return res.status(400).json({
             message: "At least one of customerId, paymentType, or orderDate is required"
         });
@@ -58,13 +60,70 @@ const getAllDetailsid = async (req, res) => {
             whereCondition.orderStatus = orderStatus;  
         }
 
+        if (fromDate || toDate) {
+            whereCondition.deliveryDate = {};
+            if (fromDate) {
+                let deliveryFromDate = new Date(fromDate);
+                deliveryFromDate.setHours(0, 0, 0, 0); 
+                whereCondition.deliveryDate[Op.gte] = deliveryFromDate;
+            }
+            if (toDate) {
+                let deliveryToDate = new Date(toDate);
+                deliveryToDate.setHours(23, 59, 59, 999);
+                whereCondition.deliveryDate[Op.lte] = deliveryToDate;
+            }
+        }
+        
+        if (orderFromDate || orderToDate) {
+            whereCondition.orderDate = {};
+            if (orderFromDate) {
+                let orderFrom = new Date(orderFromDate);
+                orderFrom.setHours(0, 0, 0, 0); 
+                whereCondition.orderDate[Op.gte] = orderFrom;
+            }
+            if (orderToDate) {
+               
+                let orderTo = new Date(orderToDate);
+                orderTo.setHours(23, 59, 59, 999); 
+                whereCondition.orderDate[Op.lte] = orderTo;
+            }
+        }
+        
+
+
         let wherePaymentCondition = {};
 
         if (paymentType) {
             wherePaymentCondition.paymentType = paymentType;
         }
+        
+        const totalCount = await Order.count({
+            where: whereCondition,
+            include: [
+                {
+                    model: Customer,
+                    as: "Customervalue"
+                },
+                {
+                    model: OrderDetail,
+                    as: "OrderDetails",
+                    include: [
+                        {
+                            model: Product,
+                            as: "ProductValue"
+                        }
+                    ]
+                },
+                {
+                    model: Payment,
+                    as: "PaymentValue",
+                    where: wherePaymentCondition
+                }
+            ]
+        });
 
         const details = await Order.findAll({
+            
             where: whereCondition,  
             include: [
                 {
@@ -97,7 +156,9 @@ const getAllDetailsid = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully", 
+            totalCount: totalCount,
             data: details
+            
         });
 
     } catch (error) {
