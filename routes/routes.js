@@ -13,7 +13,7 @@ router.delete('/deletecustomer',customerController.deleteCustomer)
 router.post('/logincustomer',customerController.Login)
 
 router.get('/getProduct',productController.getProduct)
-router.post('postProduct',productController.createProduct)
+router.post('/postProduct',productController.createProduct)
 router.put('/updateProduct',productController.updateProduct)
 router.delete('/deleteProduct',productController.deleteProduct)
 

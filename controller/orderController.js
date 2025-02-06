@@ -47,7 +47,8 @@ const createOrder = async (req, res) => {
         
         for (const paymentuser of payments) {
             const totalAmounts = paymentuser.orderAmount - paymentuser.voucher;
-            const paymentType = paymentuser.paymentType === 1 ? 'online Pay' : paymentuser.paymentType === 2 ? 'cash Pay' : '';
+            const paymentType = paymentuser.paymentType === 1 ? 1 : paymentuser.paymentType === 2 ? 2 : null;
+
             await Payment.create({
                 orderId: order.id,
                 orderAmount: paymentuser.orderAmount,

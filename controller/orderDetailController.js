@@ -1,6 +1,6 @@
 const { where } = require("sequelize");
 const { Customer, Order, OrderDetail, Product,Payment } = require("../models");
-const paginate = require('../controller/paginationFunction'); // Assuming pagination function is defined
+const paginate = require('../controller/paginationFunction'); 
 
 
 const getAllDetails = async (req, res) => {
@@ -40,22 +40,22 @@ const getAllDetails = async (req, res) => {
 
 
 const getAllDetailsid = async (req, res) => {
-    const { customerId, paymentType } = req.body;  
+    const { customerId, paymentType, orderStatus } = req.body; 
 
-    if (!customerId && !paymentType) {
+    if (!customerId && !paymentType && !orderStatus) {
         return res.status(400).json({
-            message: "Either customerId or paymentType is required"
+            message: "At least one of customerId, paymentType, or orderDate is required"
         });
     }
-
-    console.log("Received customerId:", customerId);
-    console.log("Received paymentType:", paymentType);
-
     try {
         let whereCondition = {};
 
         if (customerId) {
             whereCondition.customerId = customerId;
+        }
+
+        if (orderStatus) {
+            whereCondition.orderStatus = orderStatus;  
         }
 
         let wherePaymentCondition = {};
