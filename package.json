@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha tests/**/*.test.js --timeout 10000 --exit",
     "start": "node server.js"
   },
   "keywords": [],
@@ -24,6 +24,11 @@
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "sequelize-cli": "^6.6.2"
+    "chai": "^5.1.2",
+    "chai-http": "^5.1.1",
+    "mocha": "^11.1.0",
+    "sequelize-cli": "^6.6.2",
+    "sinon": "^19.0.2",
+    "supertest": "^7.0.0"
   }
 }

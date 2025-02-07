@@ -89,40 +89,13 @@ const getAllDetailsid = async (req, res) => {
             }
         }
         
-
-
         let wherePaymentCondition = {};
 
         if (paymentType) {
             wherePaymentCondition.paymentType = paymentType;
         }
-        
-        const totalCount = await Order.count({
-            where: whereCondition,
-            include: [
-                {
-                    model: Customer,
-                    as: "Customervalue"
-                },
-                {
-                    model: OrderDetail,
-                    as: "OrderDetails",
-                    include: [
-                        {
-                            model: Product,
-                            as: "ProductValue"
-                        }
-                    ]
-                },
-                {
-                    model: Payment,
-                    as: "PaymentValue",
-                    where: wherePaymentCondition
-                }
-            ]
-        });
 
-        const details = await Order.findAll({
+        const details = await Order.findAndCountAll({
             
             where: whereCondition,  
             include: [
@@ -156,8 +129,8 @@ const getAllDetailsid = async (req, res) => {
 
         res.status(200).json({
             message: "Data fetched successfully", 
-            totalCount: totalCount,
-            data: details
+            totalCount:details.count,
+            data: details.rows
             
         });
 
