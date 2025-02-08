@@ -28,7 +28,7 @@ const register = async (req, res) => {
         const hashedpassword = await bcrypt.hash(Password, 10)
         
         const newCustomer = await Customer.create({ Username, Password: hashedpassword, email,contact  })
-        res.status(201).json({ message: "User Registed Sucessfully",newCustomer })
+        res.status(200).json({ message: "User Registed Sucessfully",newCustomer })
     } catch (error) {
         console.log(error);
 

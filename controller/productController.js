@@ -15,7 +15,7 @@ const getProduct=async(req,res)=>{
 const createProduct=async(req,res)=>{
     try {
         const productcreate=await Product.create(req.body)
-        res.status(200).json({message:"created the producted sucessfully",data:productcreate})
+        res.status(200).json({message:"Product Created Successfully",data:productcreate})
     } catch (error) {
         res.status(400).json({message:"error to create a product",error:error.message})
     }

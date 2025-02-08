@@ -1,29 +1,74 @@
-// tests/customer.test.js
 const readline = require("readline");
 const http = require("http");
 const { expect } = require("chai");
 
-describe("User Registration API (Only Mocha with CMD Input)", function () {
-  this.timeout(60000);
+describe("Customer API Tests (CMD Input)", function () {
+  this.timeout(60000); // Extend timeout for user input
 
-  const askQuestion = (query) => {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+  // Function to get user input and force required fields
+  const askQuestion = (query, required = true) => {
+    return new Promise((resolve) => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      const ask = () => {
+        rl.question(query, (answer) => {
+          if (required && answer.trim() === "") {
+            console.log("⚠️  This field is required. Please enter a value.");
+            ask(); // Keep asking until valid input is provided
+          } else {
+            rl.close();
+            resolve(answer.trim());
+          }
+        });
+      };
+
+      ask();
     });
-
-    return new Promise((resolve) =>
-      rl.question(query, (answer) => {
-        rl.close();
-        resolve(answer);
-      })
-    );
   };
 
-  it("should register a new user with command-line input", async function () {
+  let token, userId;
+
+  // Function to make HTTP requests
+  const makeRequest = (options, postData) =>
+    new Promise((resolve, reject) => {
+      const req = http.request(options, (res) => {
+        let data = "";
+
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+
+        res.on("end", () => {
+          console.log("\n🔹 RAW RESPONSE FROM SERVER:\n", data);
+          console.log(`\n🔹 Status Code: ${res.statusCode}`);
+
+          try {
+            const response = JSON.parse(data);
+            resolve({ status: res.statusCode, body: response });
+          } catch (error) {
+            reject(new Error(`\nError Parsing JSON: ${error.message}\nRaw Response: ${data}`));
+          }
+        });
+      });
+
+      req.on("error", (err) => {
+        reject(err);
+      });
+
+      if (postData) {
+        req.write(postData);
+      }
+      req.end();
+    });
+
+  // ✅ User Registration
+  it("should register a new user", async function () {
     console.log("\n--- User Registration ---");
 
-    const Username= await askQuestion("Enter Username: ");
+    const Username = await askQuestion("Enter Username: ");
     const Password = await askQuestion("Enter Password: ");
     const email = await askQuestion("Enter Email: ");
     const contact = await askQuestion("Enter Contact Number: ");
@@ -41,43 +86,116 @@ describe("User Registration API (Only Mocha with CMD Input)", function () {
       },
     };
 
-    // Function to make HTTP request
-    const makeRequest = () =>
-      new Promise((resolve, reject) => {
-        const req = http.request(options, (res) => {
-          let data = "";
+    const response = await makeRequest(options, postData);
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal("User Registed Sucessfully");
 
-          res.on("data", (chunk) => {
-            data += chunk;
-          });
+    userId = response.body.newCustomer.id;
+  });
 
-          res.on("end", () => {
-            console.log("\n🔹 RAW RESPONSE FROM SERVER:\n", data);
-            console.log(`\n🔹 Status Code: ${res.statusCode}`);
+  // ✅ User Login
+  it("should log in", async function () {
+    console.log("\n--- User Login ---");
 
-            try {
-              const response = JSON.parse(data);
+    const Username = await askQuestion("Enter Username: ");
+    const Password = await askQuestion("Enter Password: ");
+    const email = await askQuestion("Enter Email: ");
 
-              expect(res.statusCode).to.equal(201);
-              expect(response.message).to.equal("User Registed Sucessfully");
+    const postData = JSON.stringify({ Username, Password, email });
 
-              console.log("\n✅ User created successfully!");
-              resolve();
-            } catch (error) {
-              reject(new Error(`\Error Response: ${data}`));
-            //   reject(new Error(`JSON Parsing Error: ${error.message}\nRaw Response: ${data}`));
-            }
-          });
-        });
+    const options = {
+      hostname: "localhost",
+      port: 3000,
+      path: "/api/logincustomer",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(postData),
+      },
+    };
 
-        req.on("error", (err) => {
-          reject(err);
-        });
+    const response = await makeRequest(options, postData);
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal("Login successful");
 
-        req.write(postData);
-        req.end();
-      });
+    token = response.body.token;
+  });
 
-    await makeRequest();
+  // ✅ Fetch All Customers
+  it("should fetch all customers", async function () {
+    console.log("\n--- Fetching All Customers ---");
+
+    const options = {
+      hostname: "localhost",
+      port: 3000,
+      path: "/api/getcustomer",
+      method: "GET",
+    };
+
+    const response = await makeRequest(options);
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal("Fetched the customer sucessfully");
+  });
+
+  // ✅ Update Customer
+  it("should update a customer", async function () {
+    console.log("\n--- Update Customer ---");
+
+    const id = await askQuestion("Enter User ID to update: ");
+    let Username = await askQuestion("Enter New Username (Press Enter to skip): ", false);
+    let contact = await askQuestion("Enter New Contact Number (Press Enter to skip): ", false);
+
+    // Remove empty fields from request
+    const updateData = {};
+    if (Username !== "") updateData.Username = Username;
+    if (contact !== "") updateData.contact = contact;
+
+    if (Object.keys(updateData).length === 0) {
+      console.log("⚠️ No data provided for update. Exiting test.");
+      return;
+    }
+
+    updateData.id = id; // ID is required
+
+    const postData = JSON.stringify(updateData);
+
+    const options = {
+      hostname: "localhost",
+      port: 3000,
+      path: "/api/updatecustomer",
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(postData),
+      },
+    };
+
+    const response = await makeRequest(options, postData);
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal("updated the customer data sucessfully");
+  });
+
+  // ✅ Delete Customer
+  it("should delete a customer", async function () {
+    console.log("\n--- Delete Customer ---");
+
+    const id = await askQuestion("Enter User ID to delete: ");
+
+    const postData = JSON.stringify({ id });
+
+    const options = {
+      hostname: "localhost",
+      port: 3000,
+      path: "/api/deletecustomer",
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(postData),
+      },
+    };
+
+    const response = await makeRequest(options, postData);
+    expect(response.status).to.equal(200);
+    expect(response.body.message).to.equal("delete the customer data sucessfully");
   });
 });
