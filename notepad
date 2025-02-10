@@ -1,0 +1,65 @@
+const fs = require('fs');
+const path = require('path');
+
+const folders = [
+    'src/customer/controllers',
+    'src/customer/routes',
+    'src/customer/validations',
+    'src/product/controllers',
+    'src/product/routes',
+    'src/product/validations',
+    'src/order/controllers',
+    'src/order/routes',
+    'src/order/validations',
+    'src/orderDetails/controllers',
+    'src/orderDetails/routes',
+    'src/orderDetails/validations',
+    'src/models',
+    'src/middlewares',
+    'src/routes',
+    'src/database/config',
+    'src/database/migrations',
+    'src/database/seeders'
+];
+
+const files = [
+    'src/customer/controllers/customerController.js',
+    'src/customer/routes/customerRoutes.js',
+    'src/customer/validations/customerValidation.js',
+    'src/product/controllers/productController.js',
+    'src/product/routes/productRoutes.js',
+    'src/product/validations/productValidation.js',
+    'src/order/controllers/orderController.js',
+    'src/order/routes/orderRoutes.js',
+    'src/order/validations/orderValidation.js',
+    'src/orderDetails/controllers/orderDetailsController.js',
+    'src/orderDetails/routes/orderDetailsRoutes.js',
+    'src/orderDetails/validations/orderDetailsValidation.js',
+    'src/models/customer.js',
+    'src/models/product.js',
+    'src/models/order.js',
+    'src/models/orderDetails.js',
+    'src/middlewares/authToken.js',
+    'src/routes/index.js',
+    'src/database/config/database.js',
+    'src/database/migrations/20240210-create-tables.js',
+    'src/database/seeders/20240210-seed-data.js',
+    '.env',
+    '.gitignore',
+    'app.js',
+    'server.js',
+    'package.json',
+    'package-lock.json'
+];
+
+// Create folders
+folders.forEach(folder => {
+    fs.mkdirSync(folder, { recursive: true });
+});
+
+// Create empty files
+files.forEach(file => {
+    fs.writeFileSync(file, '', { flag: 'w' });
+});
+
+console.log("✅ Project structure created successfully! 🚀");
